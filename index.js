@@ -93,9 +93,10 @@ PixelNode_Driver.prototype.painter = function() {
     var self = this;
     
     global.mapping.forEach(function(map) {
-    	if (self.pixelData[map.name]) {
+    	if (self.pixelData[map.name] && self.pixelData[map.name].mode !== "off") {
 	    	var ringI = 0;
-	    	map.rings.forEach(function(ring) {
+
+	    	map[self.pixelData[map.name].mode].forEach(function(ring) {
 	    		// offset ring
 	    		if (self.options.offset && ring.offset) {
 	    			var segment1 = ring.px.slice(ring.offset,12);
@@ -109,9 +110,9 @@ PixelNode_Driver.prototype.painter = function() {
 	    		var pixelI = 0;
 		    	pixels.forEach(function(pixelConfig) {
 
-		    		var red = self.pixelData[map.name].rings[ringI][pixelI][0];
-		    		var green = self.pixelData[map.name].rings[ringI][pixelI][1];
-		    		var blue = self.pixelData[map.name].rings[ringI][pixelI][2];
+		    		var red = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][0];
+		    		var green = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][1];
+		    		var blue = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][2];
 
 		    		if (!self.options.pixelColorCorrection || pixelConfig[2]) {
 		    			self.setPixel(pixelConfig[1], red, green, blue);
