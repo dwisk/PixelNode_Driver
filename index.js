@@ -53,7 +53,7 @@ PixelNode_Driver.prototype.init = function() {
 }
 
 // set's a pixel – to be overridden
-PixelNode_Driver.prototype.setPixel = function(id, r,g,b) {
+PixelNode_Driver.prototype.setPixel = function(strip, id, r,g,b) {
 	// override
 }
 
@@ -70,7 +70,7 @@ PixelNode_Driver.prototype.sendPixels = function() {
 PixelNode_Driver.prototype.resetPixels = function() {
 	for (var pixel = 0; pixel < this.options.pixelCount; pixel++)
 	{
-	    this.setPixel(pixel, 0, 0, 0);
+	    this.setPixel(0, pixel, 0, 0, 0);
 	}
 }
 
@@ -114,10 +114,10 @@ PixelNode_Driver.prototype.painter = function() {
 		    		var green = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][1];
 		    		var blue = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][2];
 
-		    		if (!self.options.pixelColorCorrection || pixelConfig[2]) {
-		    			self.setPixel(pixelConfig[1], red, green, blue);
+		    		if (!self.options.pixelColorCorrection || pixelConfig[2] || ring.pixelColorCorrection || map.pixelColorCorrection) {
+		    			self.setPixel(pixelConfig[0], pixelConfig[1], red, green, blue);
 		    		} else {
-		    			self.setPixel(pixelConfig[1], green, red, blue);
+		    			self.setPixel(pixelConfig[0], pixelConfig[1], green, red, blue);
 		    		}
 			    	pixelI++;
 		    	});
