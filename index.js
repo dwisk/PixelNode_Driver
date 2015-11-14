@@ -106,6 +106,18 @@ PixelNode_Driver.prototype.painter = function() {
 	    			pixels = ring.px;
 	    		}
 
+	    		// mirror
+
+	    		if (ring.mirrow && !ring.px.mirrowed ) {
+	    			tmppixels = _.clone(pixels);
+	    			var j = 0;
+	    			for (var i = tmppixels.length - 1; i >= 0; i--) {
+	    				pixels[j] = tmppixels[i];
+	    				j++;
+	    			};
+	    			ring.px.mirrowed = true;
+	    		}
+
 	    		// pixels
 	    		var pixelI = 0;
 		    	pixels.forEach(function(pixelConfig) {
