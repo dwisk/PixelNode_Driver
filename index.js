@@ -91,12 +91,14 @@ PixelNode_Driver.prototype.startPainter = function() {
 // painter
 PixelNode_Driver.prototype.painter = function() {
     var self = this;
-    
-    global.mapping.forEach(function(map) {
+
+    for (var i = 0; i < global.mapping.length;i++) {
+    	map = global.mapping[i];
     	if (self.pixelData[map.name] && self.pixelData[map.name].mode !== "off") {
 	    	var ringI = 0;
 
-	    	map[self.pixelData[map.name].mode].forEach(function(ring) {
+	    	for (var j = 0; j < map[self.pixelData[map.name].mode].length;j++) {
+	    		ring = map[self.pixelData[map.name].mode][j];
 	    		// offset ring
 	    		if (self.options.offset && ring.offset) {
 	    			var segment1 = ring.px.slice(ring.offset,12);
@@ -120,7 +122,8 @@ PixelNode_Driver.prototype.painter = function() {
 
 	    		// pixels
 	    		var pixelI = 0;
-		    	pixels.forEach(function(pixelConfig) {
+	    		for (var p = 0; p < pixels.length;p++) {
+	    			pixelConfig = pixels[p];
 
 		    		var red = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][0];
 		    		var green = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][1];
@@ -132,11 +135,11 @@ PixelNode_Driver.prototype.painter = function() {
 		    			self.setPixel(pixelConfig[0], pixelConfig[1], green, red, blue);
 		    		}
 			    	pixelI++;
-		    	});
+		    	}
 		    	ringI++;
-	    	});
+	    	}
     	}
-    });
+    }
 
     this.sendPixels();
 }
