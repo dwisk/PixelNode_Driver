@@ -84,7 +84,7 @@ PixelNode_Driver.prototype.startPainter = function() {
 
 	// set interval for painter
 	this.painter_interval = setInterval(function() {
-	  self.painter.call(self);
+	  setImmediate(self.painter.bind(self));
 	}, self.options.delay);  
 }
 
@@ -141,5 +141,5 @@ PixelNode_Driver.prototype.painter = function() {
     	}
     }
 
-    this.sendPixels();
+    setImmediate(self.sendPixels.bind(self));
 }
