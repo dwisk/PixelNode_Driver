@@ -84,7 +84,7 @@ PixelNode_Driver.prototype.startPainter = function() {
 
 	// set interval for painter
 	this.painter_interval = setInterval(function() {
-	  self.painter.call(self);
+	  setImmediate(self.painter.bind(self));
 	}, self.options.delay);  
 }
 
@@ -99,47 +99,64 @@ PixelNode_Driver.prototype.painter = function() {
 
 	    	for (var j = 0; j < map[self.pixelData[map.name].mode].length;j++) {
 	    		ring = map[self.pixelData[map.name].mode][j];
-	    		// offset ring
-	    		if (self.options.offset && ring.offset) {
-	    			var segment1 = ring.px.slice(ring.offset,12);
-	    			var segment2 = ring.px.slice(0,ring.offset);
-	    			pixels = segment1.concat(segment2);
-	    		} else {
-	    			pixels = ring.px;
-	    		}
+	    		self.paintRing(ring, ringI, map);
 
-	    		// mirror
-
-	    		if (ring.mirrow && !ring.px.mirrowed ) {
-	    			tmppixels = _.clone(pixels);
-	    			var j = 0;
-	    			for (var i = tmppixels.length - 1; i >= 0; i--) {
-	    				pixels[j] = tmppixels[i];
-	    				j++;
-	    			};
-	    			ring.px.mirrowed = true;
-	    		}
-
-	    		// pixels
-	    		var pixelI = 0;
-	    		for (var p = 0; p < pixels.length;p++) {
-	    			pixelConfig = pixels[p];
-
-		    		var red = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][0];
-		    		var green = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][1];
-		    		var blue = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][2];
-
-		    		if (!self.options.pixelColorCorrection || pixelConfig[2] || ring.pixelColorCorrection || map.pixelColorCorrection) {
-		    			self.setPixel(pixelConfig[0], pixelConfig[1], red, green, blue);
-		    		} else {
-		    			self.setPixel(pixelConfig[0], pixelConfig[1], green, red, blue);
-		    		}
-			    	pixelI++;
-		    	}
 		    	ringI++;
 	    	}
     	}
     }
 
-    this.sendPixels();
+    //setImmediate(self.sendPixels.bind(self));
+    self.sendPixels();
+}
+
+
+PixelNode_Driver.prototype.paintRing = function(ring, ringI, map) {
+	var self = this;
+
+	var pixels = self.getPixels(ring);
+
+	// pixels
+	var pixelI = 0;
+	for (var p = 0; p < pixels.length;p++) {
+		pixelConfig = pixels[p];
+
+		var red = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][0];
+		var green = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][1];
+		var blue = self.pixelData[map.name][self.pixelData[map.name].mode][ringI][pixelI][2];
+
+		if (!self.options.pixelColorCorrection || pixelConfig[2] || ring.pixelColorCorrection || map.pixelColorCorrection) {
+			self.setPixel(pixelConfig[0], pixelConfig[1], red, green, blue);
+		} else {
+			self.setPixel(pixelConfig[0], pixelConfig[1], green, red, blue);
+		}
+    	pixelI++;
+	}
+}
+
+PixelNode_Driver.prototype.getPixels = function(ring) {
+	var self = this;
+
+	// offset ring
+	if (self.options.offset && ring.offset) {
+		var segment1 = ring.px.slice(ring.offset,12);
+		var segment2 = ring.px.slice(0,ring.offset);
+		pixels = segment1.concat(segment2);
+	} else {
+		pixels = ring.px;
+	}
+
+	// mirror
+
+	if (ring.mirrow && !ring.px.mirrowed ) {
+		tmppixels = _.clone(pixels);
+		var j = 0;
+		for (var i = tmppixels.length - 1; i >= 0; i--) {
+			pixels[j] = tmppixels[i];
+			j++;
+		};
+		ring.px.mirrowed = true;
+	}
+
+	return pixels;
 }
